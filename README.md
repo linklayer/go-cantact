@@ -1,3 +1,4 @@
+[![GoDoc](https://godoc.org/github.com/linklayer/go-cantact?status.svg)](http://godoc.org/github.com/linklayer/go-cantact)
 # go-cantact
 
 A package for communicating on Controller Area Network buses using the
