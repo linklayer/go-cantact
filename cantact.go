@@ -3,20 +3,20 @@
 // license that can be found in the LICENSE file
 
 /*
-Package cantact implements an interface to the CANtact device, to provide 
+Package cantact implements an interface to the CANtact device, to provide
 to Controller Area Network (CAN) buses.
 */
 package cantact
 
 import (
-	"github.com/tarm/serial"
 	"fmt"
+	"github.com/tarm/serial"
 )
 
 // Frame is a single CAN frame.
 type Frame struct {
-	ID int
-	Dlc int
+	ID   int
+	Dlc  int
 	Data []byte
 }
 
@@ -39,21 +39,21 @@ func NewDevice(portName string) (Device, error) {
 // SetBitrate sets the bitrate of the device.
 func (d *Device) SetBitrate(rate int) error {
 	str := fmt.Sprintf("S%d\r", rate)
-	_, err :=  d.port.Write([]byte(str))
+	_, err := d.port.Write([]byte(str))
 	return err
 }
 
 // Open opens the connection to the CAN bus, enabling reception and transmission
 // of CAN frames.
 func (d *Device) Open() error {
-	_, err :=  d.port.Write([]byte("O\r"))
+	_, err := d.port.Write([]byte("O\r"))
 	return err
 }
 
 // Close closes the connection to the CAN bus, disabling reception and
 // transmission of CAN frames.
 func (d *Device) Close() error {
-	_, err :=  d.port.Write([]byte("C\r"))
+	_, err := d.port.Write([]byte("C\r"))
 	return err
 }
 
@@ -64,22 +64,22 @@ func (d *Device) WriteFrame(f Frame) error {
 		str = fmt.Sprintf("%s%02X", str, f.Data[i])
 	}
 	str = str + "\r"
-	
-	_, err :=  d.port.Write([]byte(str))
-	
+
+	_, err := d.port.Write([]byte(str))
+
 	return err
 }
 
 // ReadFrame reads a single Frame from the CAN bus, blocks until a frame is
 // received.
-func (d *Device) ReadFrame() (Frame,error) {
+func (d *Device) ReadFrame() (Frame, error) {
 	buf := make([]byte, 128)
 	_, err := d.port.Read(buf)
-	
+
 	if err != nil {
 		return Frame{}, err
 	}
-	
+
 	f := Frame{}
 	var dataString string
 
@@ -88,6 +88,6 @@ func (d *Device) ReadFrame() (Frame,error) {
 	for i := 0; i < f.Dlc; i++ {
 		fmt.Sscanf(dataString[i*2:i*2+2], "%2X", &f.Data[i])
 	}
-		
+
 	return f, nil
 }
