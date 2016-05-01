@@ -16,14 +16,16 @@ package main
 
 import (
 	"log"
+	"os"
 	"github.com/linklayer/go-cantact"
 )
 
 func main() {
 	d, err := cantact.NewDevice(os.Args[1])
-	if err != nil:
+	if err != nil {
 		log.Fatal(err)
-
+	}
+	
 	// set bitrate mode to 6, 500 kbps
 	d.SetBitrate(6)
 
@@ -32,13 +34,15 @@ func main() {
 
 	// send a frame
 	data := []byte{0xDE, 0xAD, 0xBE, 0xEF}
-	tx_frame := Frame{Id: 0x123, Dlc: len(data), Data: data}
-	d.WriteFrame(tx_frame)
+	txFrame := cantact.Frame{ID: 0x123, Dlc: len(data), Data: data}
+	d.WriteFrame(txFrame)
 
 	// read a frame (blocking call)
-	rx_frame := d.ReadFrame()
-	log.Println(rx_frame)
-
+	rxFrame, err := d.ReadFrame()
+	if err != nil {
+		log.Panic(err)
+	}
+	log.Println(rxFrame)
 }
 ```
 

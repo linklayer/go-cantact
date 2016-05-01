@@ -3,8 +3,8 @@
 // license that can be found in the LICENSE file
 
 /*
-	package cantact implements an interface to the CANtact device, to 
-	provide access to Controller Area Network (CAN) buses.
+Package cantact implements an interface to the CANtact device, to provide 
+to Controller Area Network (CAN) buses.
 */
 package cantact
 
@@ -15,7 +15,7 @@ import (
 
 // Frame is a single CAN frame.
 type Frame struct {
-	Id int
+	ID int
 	Dlc int
 	Data []byte
 }
@@ -59,7 +59,7 @@ func (d *Device) Close() error {
 
 // WriteFrame writes a single Frame to the CAN bus.
 func (d *Device) WriteFrame(f Frame) error {
-	str := fmt.Sprintf("t%03X%d", f.Id, f.Dlc)
+	str := fmt.Sprintf("t%03X%d", f.ID, f.Dlc)
 	for i := 0; i < f.Dlc; i++ {
 		str = fmt.Sprintf("%s%02X", str, f.Data[i])
 	}
@@ -83,7 +83,7 @@ func (d *Device) ReadFrame() (Frame,error) {
 	f := Frame{}
 	var dataString string
 
-	fmt.Sscanf(string(buf), "t%3X%1d%s", &f.Id, &f.Dlc, &dataString)
+	fmt.Sscanf(string(buf), "t%3X%1d%s", &f.ID, &f.Dlc, &dataString)
 	f.Data = make([]byte, 8)
 	for i := 0; i < f.Dlc; i++ {
 		fmt.Sscanf(dataString[i*2:i*2+2], "%2X", &f.Data[i])
