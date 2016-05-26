@@ -47,6 +47,7 @@ func (d *Device) SetBitrate(rate int) error {
 // of CAN frames.
 func (d *Device) Open() error {
 	_, err := d.port.Write([]byte("O\r"))
+	d.port.Flush()
 	return err
 }
 
@@ -73,8 +74,17 @@ func (d *Device) WriteFrame(f Frame) error {
 // ReadFrame reads a single Frame from the CAN bus, blocks until a frame is
 // received.
 func (d *Device) ReadFrame() (Frame, error) {
-	buf := make([]byte, 128)
-	_, err := d.port.Read(buf)
+
+	char := make([]byte, 1)
+	buf := []byte{}
+	var err error
+	for {
+		_, err = d.port.Read(char)
+		buf = append(buf, char[0])
+		if char[0] == byte('\r') {
+			break
+		}
+	}
 
 	if err != nil {
 		return Frame{}, err
